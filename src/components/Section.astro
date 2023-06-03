@@ -1,0 +1,57 @@
+---
+const { color, title, subtitle } = Astro.props;
+---
+
+<section
+    class="landing-section bg-black h-screen w-screen text-center relative overflow-hidden"
+    data-header-color=`${color}`
+>
+    <div
+        class="landing-div z-30 relative h-full flex flex-col transition-all duration-500 opacity-0"
+    >
+        <header>
+            <h2 class=`text-${color} pt-40 text-[40px] font-medium`>{title}</h2>
+            <p class=`text-${color} text-sm`>{subtitle}</p>
+        </header>
+
+        <footer class="flex flex-col flex-grow justify-end pb-20">
+            <slot name="buttons" />
+        </footer>
+    </div>
+
+    <div class="absolute top-0 bottom-0 h-full w-full">
+        <slot name="background" />
+    </div>
+</section>
+
+<script>
+    const $divs =
+        document.querySelectorAll<HTMLDivElement>(".landing-div") ??
+        new HTMLDivElement();
+
+    const observerOptions = {
+        root: null,
+        rootMargin: "0px",
+        treshold: 0.5,
+    };
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            const { isIntersecting } = entry;
+
+            $divs.forEach(function (div) {
+                if (isIntersecting) {
+                    div.style.visibility = "hidden";
+                    div.style.opacity = "0";
+                } else {
+                    div.style.visibility = "visible";
+                    div.style.opacity = "1";
+                }
+            });
+        });
+    }, observerOptions);
+
+    $divs.forEach(function (div) {
+        observer.observe(div);
+    });
+</script>
